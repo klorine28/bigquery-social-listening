@@ -10,18 +10,35 @@ def get_bigquery_client(credentials_path: Optional[str] = None, project_id: Opti
     Initialize BigQuery client with credentials.
     
     Args:
-        credentials_path: Path to service account JSON file
+        credentials_path: Path to service account JSON file (optional)
         project_id: Google Cloud project ID
     
     Returns:
         BigQuery client instance
+    
+    Note:
+        If no credentials_path is provided, uses Application Default Credentials.
+        Set these up with: gcloud auth application-default login
     """
-    if credentials_path:
+    if credentials_path and os.path.exists(credentials_path):
+        # Use service account if provided
         credentials = service_account.Credentials.from_service_account_file(credentials_path)
         client = bigquery.Client(credentials=credentials, project=project_id)
+        print(f"Using service account credentials from {credentials_path}")
     else:
-        # Use default credentials from environment
-        client = bigquery.Client(project=project_id)
+        # Use Application Default Credentials (gcloud auth)
+        try:
+            from google.auth import default
+            credentials, default_project = default()
+            if not project_id and default_project:
+                project_id = default_project
+            client = bigquery.Client(project=project_id)
+            print(f"Using Application Default Credentials for project: {project_id}")
+        except Exception as e:
+            print("Error: No credentials found. Please either:")
+            print("1. Run: gcloud auth application-default login")
+            print("2. Provide a service account JSON file")
+            raise e
     
     return client
 
