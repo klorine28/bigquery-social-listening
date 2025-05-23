@@ -20,7 +20,7 @@ def get_bigquery_client(credentials_path: Optional[str] = None, project_id: Opti
         If no credentials_path is provided, uses Application Default Credentials.
         Set these up with: gcloud auth application-default login
     """
-    if credentials_path and os.path.exists(credentials_path):
+    if credentials_path and credentials_path.strip() and os.path.exists(credentials_path):
         # Use service account if provided
         credentials = service_account.Credentials.from_service_account_file(credentials_path)
         client = bigquery.Client(credentials=credentials, project=project_id)

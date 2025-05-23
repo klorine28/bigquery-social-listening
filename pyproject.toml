@@ -10,4 +10,5 @@ dependencies = [
     "pandas>=2.2.3",
     "pyarrow>=20.0.0",
     "python-dotenv>=1.0.0",
+    "db-dtypes>=1.2.0",
 ]
